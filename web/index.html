@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Quote Assistant</title>
+  <script src="https://alcdn.msauth.net/browser/2.32.1/js/msal-browser.min.js" integrity="sha384-v2cZTHbKx4nHCqB6f+GO6zkRgZNpmjDoE7YQDdyCjTiMQuuLHfoalvVYLRNvKcJx" crossorigin="anonymous"></script>
+</head>
+<body>
+  <button id="signin">Sign in with Microsoft</button>
+  <div id="app" style="display:none;">
+    <textarea id="prompt" placeholder="Enter project details"></textarea><br />
+    <input type="file" id="file" />
+    <button id="submit">Submit</button>
+    <pre id="output"></pre>
+  </div>
+  <script>
+    const msalConfig = {
+      auth: {
+        clientId: '{{AAD_CLIENT_ID}}',
+        authority: 'https://login.microsoftonline.com/{{AAD_TENANT_ID}}'
+      }
+    };
+    const msalInstance = new msal.PublicClientApplication(msalConfig);
+    let account = null;
+    const signInButton = document.getElementById('signin');
+    const appDiv = document.getElementById('app');
+    signInButton.onclick = () => {
+      msalInstance.loginPopup({ scopes: ['User.Read'] }).then((resp) => {
+        account = resp.account;
+        signInButton.style.display = 'none';
+        appDiv.style.display = 'block';
+      }).catch(err => alert(err));
+    };
+
+    document.getElementById('submit').onclick = () => {
+      const prompt = document.getElementById('prompt').value;
+      const fileInput = document.getElementById('file');
+      const formData = new FormData();
+      formData.append('prompt', prompt);
+      if (fileInput.files[0]) {
+        formData.append('file', fileInput.files[0]);
+      }
+      formData.append('userEmail', account ? account.username : '');
+      fetch('{{N8N_WEBHOOK_URL}}', {
+        method: 'POST',
+        body: formData
+      })
+      .then(res => res.json())
+      .then(data => {
+        document.getElementById('output').textContent = data.gptOutput || JSON.stringify(data, null, 2);
+      })
+      .catch(err => {
+        document.getElementById('output').textContent = err.toString();
+      });
+    };
+  </script>
+</body>
+</html>

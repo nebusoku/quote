@@ -1,0 +1,17 @@
+version: "3.8"
+services:
+  web:
+    build: ./web
+    environment:
+      - N8N_WEBHOOK_URL=https://n8n.gds-atl.app/webhook/project
+      - AAD_CLIENT_ID=${AAD_CLIENT_ID}
+      - AAD_TENANT_ID=${AAD_TENANT_ID}
+    ports:
+      - "3000:3000"
+    restart: unless-stopped
+  cloudflared:
+    image: cloudflare/cloudflared:latest
+    command: tunnel run
+    environment:
+      - TUNNEL_TOKEN=${CLOUDFLARED_TOKEN}
+    restart: unless-stopped
