@@ -3,7 +3,7 @@ services:
   web:
     build: ./web
     environment:
-      - N8N_WEBHOOK_URL=https://n8n.gds-atl.app/webhook/project
+      - N8N_WEBHOOK_URL=https://${N8N_DOMAIN}/webhook/project
       - AAD_CLIENT_ID=${AAD_CLIENT_ID}
       - AAD_TENANT_ID=${AAD_TENANT_ID}
     ports:

@@ -5,7 +5,7 @@ This repository contains a simple web application and an n8n workflow used to co
 ## Prerequisites
 
 * Docker and Docker Compose
-* An existing n8n instance reachable at `https://n8n.gds-atl.app`
+* An existing n8n instance reachable at `https://${N8N_DOMAIN}`
 * Autotask, OpenAI, and Microsoft Graph credentials configured in n8n
 * A Cloudflare Tunnel token for exposing the web interface
 * Azure AD application (client ID and tenant ID) for Microsoft sign‑in
@@ -19,6 +19,8 @@ Create a `.env` file or define the following variables in Portainer when deployi
 | `AAD_CLIENT_ID` | Azure AD application client ID |
 | `AAD_TENANT_ID` | Azure AD tenant ID |
 | `CLOUDFLARED_TOKEN` | Token for Cloudflare Tunnel |
+| `N8N_DOMAIN` | Domain for the n8n instance |
+| `QUOTE_DOMAIN` | Domain for the web interface |
 
 ## Run the Web App
 
@@ -26,11 +28,11 @@ Create a `.env` file or define the following variables in Portainer when deployi
 docker compose up -d --build
 ```
 
-The web interface will be available on port `3000` locally and via the Cloudflare tunnel at `https://quote.gds-atl.app` once DNS is configured.
+The web interface will be available on port `3000` locally and via the Cloudflare tunnel at `https://${QUOTE_DOMAIN}` once DNS is configured.
 
 ## Import the n8n Workflow
 
-1. Log in to `https://n8n.gds-atl.app`.
+1. Log in to `https://${N8N_DOMAIN}`.
 2. From the **Workflows** view, choose **Import from File** and select `n8n-workflow.json`.
 3. Assign credentials to the following nodes:
    * **Autotask Lookup** – Autotask API credentials
@@ -40,7 +42,7 @@ The web interface will be available on port `3000` locally and via the Cloudflar
 
 ## Usage
 
-1. Open `https://quote.gds-atl.app`.
+1. Open `https://${QUOTE_DOMAIN}`.
 2. Sign in with Microsoft.
 3. Enter project details and optionally upload files.
 4. Submitted information is sent to n8n, which verifies the customer in Autotask, queries the Custom GPT, stores files in SharePoint, and returns GPT output to the web page.
